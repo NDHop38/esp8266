@@ -19,33 +19,28 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define DHTPIN 12
 #define DHTTYPE DHT11
 
-// Thiết lập cảm biến DHT
+//cảm biến DHT
 DHT dht(DHTPIN, DHTTYPE);
 
-// Thông số WiFi
+// WiFi
 const char *ssid = "SSID";
 const char *password = "PassWord";
 
 // Tạo server
 WiFiServer server(80);
-
-// Khai bao bien
-
 int value = 0;
 
 void setup()
 {
-  // Khởi động Serial
   Serial.begin(9600);
   delay(10);
-
+  
   // Khởi tạo DHT
   dht.begin();
 
-  // Doc giac trị MQ-2
+  //Sensor MQ-2
   int value = analogRead(A0);
-
-
+  
   // Khởi động OLED
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   { // Địa chỉ I2C của màn hình là 0x3C
