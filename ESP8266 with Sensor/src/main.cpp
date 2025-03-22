@@ -23,8 +23,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT dht(DHTPIN, DHTTYPE);
 
 // Thông số WiFi
-const char *ssid = "Nguyen Phong";
-const char *password = "29052010";
+const char *ssid = "SSID";
+const char *password = "PassWord";
 
 // Tạo server
 WiFiServer server(80);
@@ -120,8 +120,6 @@ void loop()
   display.print("Gas:  ");
   display.print(value);
   display.display();
-
-  // Chờ một khoảng thời gian trước khi cập nhật dữ liệu
   delay(2000);
 
   // Kiểm tra khi có client kết nối
@@ -136,12 +134,10 @@ void loop()
   {
     delay(1);
   }
-
-  // Đọc dòng đầu tiên của yêu cầu
   String req = client.readStringUntil('\r');
   client.flush();
 
-  // Tạo trang HTML hiển thị dữ liệu
+  // Hiển thị 
   String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
   s += "<!DOCTYPE HTML>";
   s += "<html>";
