@@ -1,32 +1,23 @@
-// Thêm thư viện
 #include <ESP8266WiFi.h>
-#include "DHT.h"
+#include <DHT.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <LittleFS.h>
 #include <SD.h>
 
-// Kích thước màn hình OLED
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-
-// Địa chỉ I2C của màn hình OLED
 #define OLED_RESET -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// Pin kết nối DHT
 #define DHTPIN 12
 #define DHTTYPE DHT11
-
-//cảm biến DHT
 DHT dht(DHTPIN, DHTTYPE);
 
-// WiFi
 const char *ssid = "SSID";
-const char *password = "PassWord";
+const char *password = "PASSWORD";
 
-// Tạo server
 WiFiServer server(80);
 int value = 0;
 
@@ -34,14 +25,8 @@ void setup()
 {
   Serial.begin(9600);
   delay(10);
-  
-  // Khởi tạo DHT
   dht.begin();
 
-  //Sensor MQ-2
-  int value = analogRead(A0);
-  
-  // Khởi động OLED
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   { // Địa chỉ I2C của màn hình là 0x3C
     Serial.println(F("Không tìm thấy màn hình OLED!"));
@@ -52,7 +37,6 @@ void setup()
   delay(2000);
   display.clearDisplay();
 
-  // Kết nối tới WiFi
   Serial.println();
   Serial.println();
   Serial.print("Kết nối tới mạng ");
@@ -71,7 +55,6 @@ void setup()
   server.begin();
   Serial.println("Khởi động Server");
 
-  // Hiển thị địa chỉ IP trên OLED
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
@@ -85,18 +68,20 @@ void setup()
 
 void loop()
 {
-  // Đọc độ ẩm và nhiệt độ từ cảm biến DHT
   float h = dht.readHumidity();
   float t = dht.readTemperature();
-
-  // Kiểm tra xem giá trị có đọc thành công không
+  int gasValue = analogRead(A0); 
+  Serial.println(gasValue);
   if (isnan(h) || isnan(t))
   {
     Serial.println("Không đọc được dữ liệu từ cảm biến DHT11!");
     return;
   }
-
-  // Hiển thị dữ liệu lên màn hình OLED
+  if(isnan(gasValue)
+  {
+    Serial.println("Không đọc được dữ liệu từ cảm biến MQ-2")
+  }
+    
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
@@ -117,14 +102,12 @@ void loop()
   display.display();
   delay(2000);
 
-  // Kiểm tra khi có client kết nối
   WiFiClient client = server.available();
   if (!client)
   {
     return;
   }
 
-  // Đợi client gửi yêu cầu
   while (!client.available())
   {
     delay(1);
@@ -132,7 +115,6 @@ void loop()
   String req = client.readStringUntil('\r');
   client.flush();
 
-  // Hiển thị 
   String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
   s += "<!DOCTYPE HTML>";
   s += "<html>";
@@ -145,11 +127,9 @@ void loop()
   s += " %</p>";
   s += "</html>";
   s += "<p>Gas: ";
-  s += int(value);
+  s += int(gasValue);
   s += "</html>";
 
-
-  // Gửi phản hồi tới client
   client.print(s);
   delay(1);
   Serial.println("Client đã ngắt kết nối");
