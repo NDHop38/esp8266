@@ -19,7 +19,7 @@ const char *ssid = "SSID";
 const char *password = "PASSWORD";
 
 WiFiServer server(80);
-int value = 0;
+int gasValue = 0;
 
 void setup()
 {
@@ -28,7 +28,8 @@ void setup()
   dht.begin();
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
-  { // Địa chỉ I2C của màn hình là 0x3C
+  { 
+    //I2C Oled 0x3C
     Serial.println(F("Không tìm thấy màn hình OLED!"));
     for (;;)
       ;
